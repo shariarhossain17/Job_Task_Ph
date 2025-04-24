@@ -1,8 +1,10 @@
 import { FilePdfOutlined, FileWordOutlined } from "@ant-design/icons";
 import { Button, Divider, message, Modal, Typography } from "antd";
 import { Document, HeadingLevel, Packer, Paragraph } from "docx";
+import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+
 import { PreviewProps } from "../utitliities/interface";
 const { Title, Text } = Typography;
 const Preview: React.FC<PreviewProps> = ({
@@ -40,7 +42,6 @@ const Preview: React.FC<PreviewProps> = ({
   const generateDOCX = () => {
     message.loading("Generating DOCX...");
 
-    // Create document
     const doc = new Document({
       sections: [
         {
@@ -143,7 +144,7 @@ const Preview: React.FC<PreviewProps> = ({
       ],
     });
     Packer.toBlob(doc).then((blob) => {
-      saveAs(blob, "cv.docx");
+      saveAs(blob, `${personalInfo.firstName}.docx`);
       message.success("DOCX generated successfully");
     });
   };
