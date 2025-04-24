@@ -1,13 +1,7 @@
 import dayjs from "dayjs";
 
 export const generateDummyData = (count = 100) => {
-  const properties = [
-    "Skyline Apartments",
-    "Riverside Condos",
-    "Mountain View Estate",
-    "Sunset Heights",
-    "Ocean Breeze Complex",
-  ];
+  const properties = ["Programming hero", "Amazon", "Google", "Meta", "tesla"];
 
   const employees = [
     "Abu Sufian",
@@ -18,12 +12,12 @@ export const generateDummyData = (count = 100) => {
     "Sakib Ahmed",
   ];
   const tasks = [
-    "Maintenance",
-    "Cleaning",
-    "Inspection",
-    "Repair",
-    "Installation",
-    "Renovation",
+    "Hr",
+    "Manager",
+    "Swe",
+    "web developer",
+    "saq",
+    "cyber security expert",
   ];
 
   return Array.from({ length: count }, (_, i) => {
