@@ -1,11 +1,12 @@
 import {
   BookOutlined,
-  //   BriefcaseOutlined,
+  ExportOutlined,
   ProjectOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Card, Steps, Typography } from "antd";
 import { useState } from "react";
+import Navbar from "../Components/Navbar";
 const { Title } = Typography;
 const { Step } = Steps;
 const CvMaker = () => {
@@ -17,7 +18,7 @@ const CvMaker = () => {
     },
     {
       title: "Experience",
-      icon: <UserOutlined></UserOutlined>,
+      icon: <ExportOutlined />,
     },
     {
       title: "Projects",
@@ -34,6 +35,7 @@ const CvMaker = () => {
   };
   return (
     <div>
+      <Navbar></Navbar>
       <div className="p-6 max-w-4xl mx-auto">
         <Title level={2} className="mb-6 text-center">
           CV Maker
