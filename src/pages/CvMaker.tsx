@@ -9,6 +9,7 @@ import { useState } from "react";
 import Experience from "../Components/Experience";
 import Navbar from "../Components/Navbar";
 import PersonalDetails from "../Components/PersonalDetails";
+import Projects from "../Components/Projects";
 const { Title } = Typography;
 const { Step } = Steps;
 const { TextArea } = Input;
@@ -94,10 +95,11 @@ const CvMaker = () => {
         );
       case 2:
         return (
-          <PersonalDetails
+          <Projects
             form={form}
-            personalInfo={personalInfo}
+            projects={projects}
             handleStepSubmit={handleStepSubmit}
+            prev={prev}
           />
         );
       case 3:
