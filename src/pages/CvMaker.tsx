@@ -10,6 +10,7 @@ import Academic from "../Components/Academic";
 import Experience from "../Components/Experience";
 import Navbar from "../Components/Navbar";
 import PersonalDetails from "../Components/PersonalDetails";
+import Preview from "../Components/Preview";
 import Projects from "../Components/Projects";
 const { Title } = Typography;
 const { Step } = Steps;
@@ -119,6 +120,19 @@ const CvMaker = () => {
 
   console.log(previewVisible);
 
+  const renderCVPreview = () => {
+    return (
+      <Preview
+        personalInfo={personalInfo}
+        experiences={experiences}
+        projects={projects}
+        academics={academics}
+        previewVisible={previewVisible}
+        setPreviewVisible={setPreviewVisible}
+      ></Preview>
+    );
+  };
+
   return (
     <div>
       <Navbar></Navbar>
@@ -144,7 +158,7 @@ const CvMaker = () => {
           </div>
         </Card>
 
-        {/* {renderCVPreview()} */}
+        {renderCVPreview()}
       </div>
     </div>
   );
