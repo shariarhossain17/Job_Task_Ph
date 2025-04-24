@@ -1,5 +1,5 @@
 import "./App.css";
-import EmployeeTable from "./Components/EmployeeTable";
+import EmployeeTable from "./pages/EmployeeTable";
 
 function App() {
   return (

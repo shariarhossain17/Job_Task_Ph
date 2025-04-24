@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { EmployeeData } from "./dataType";
 
-export const generateDummyData = (count = 100) => {
+export const generateDummyData = (count = 100000) => {
   const properties = ["Programming hero", "Amazon", "Google", "Meta", "tesla"];
 
   const employees = [

@@ -1,13 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router";
-import EmployeeTable from "./Components/EmployeeTable";
 import "./index.css";
+import EmployeeTable from "./pages/EmployeeTable";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <div>Hello World</div>,
+    element: <EmployeeTable></EmployeeTable>,
   },
   {
     path: "/hello",
