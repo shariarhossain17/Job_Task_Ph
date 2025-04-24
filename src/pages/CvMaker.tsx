@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import { Card, Form, Input, Steps, Typography } from "antd";
 import { useState } from "react";
+import Experience from "../Components/Experience";
 import Navbar from "../Components/Navbar";
 import PersonalDetails from "../Components/PersonalDetails";
 const { Title } = Typography;
@@ -41,6 +42,10 @@ const CvMaker = () => {
 
   const goToStep = (step) => {
     setCurrent(step);
+  };
+
+  const prev = () => {
+    setCurrent(current - 1);
   };
 
   const handleStepSubmit = (values) => {
@@ -80,10 +85,11 @@ const CvMaker = () => {
         );
       case 1:
         return (
-          <PersonalDetails
+          <Experience
             form={form}
-            personalInfo={personalInfo}
+            experiences={experiences}
             handleStepSubmit={handleStepSubmit}
+            prev={prev}
           />
         );
       case 2:
