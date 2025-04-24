@@ -161,7 +161,7 @@ const Preview: React.FC<PreviewProps> = ({
         </Button>,
         <Button
           key="pdf"
-          type="primary"
+          className="bg-blue-700"
           danger
           icon={<FilePdfOutlined />}
           onClick={generatePDF}
@@ -178,7 +178,7 @@ const Preview: React.FC<PreviewProps> = ({
         </Button>,
       ]}
     >
-      <div id="cv-preview" className="p-6 bg-white">
+      <div id="cv-preview" className="p-6 bg-white text-left space-y-6">
         <div className="text-center mb-6">
           <Title level={2}>
             {personalInfo.firstName} {personalInfo.lastName}
