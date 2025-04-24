@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import { Card, Form, Input, Steps, Typography } from "antd";
 import { useState } from "react";
+import Academic from "../Components/Academic";
 import Experience from "../Components/Experience";
 import Navbar from "../Components/Navbar";
 import PersonalDetails from "../Components/PersonalDetails";
@@ -104,10 +105,11 @@ const CvMaker = () => {
         );
       case 3:
         return (
-          <PersonalDetails
+          <Academic
             form={form}
-            personalInfo={personalInfo}
+            academics={academics}
             handleStepSubmit={handleStepSubmit}
+            prev={prev}
           />
         );
       default:
@@ -115,7 +117,7 @@ const CvMaker = () => {
     }
   };
 
-  console.log(personalInfo);
+  console.log(previewVisible);
 
   return (
     <div>
