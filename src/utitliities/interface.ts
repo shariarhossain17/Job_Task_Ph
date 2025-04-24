@@ -34,7 +34,15 @@ interface PersonalInfo {
   address?: string;
   summary?: string;
 }
-
+export interface Item {
+  propertyName: string;
+}
+export interface EmployeeName {
+  employeeName: string;
+}
+export interface IDate {
+  date: string;
+}
 export interface PreviewProps {
   personalInfo: PersonalInfo;
   experiences: Experience[];

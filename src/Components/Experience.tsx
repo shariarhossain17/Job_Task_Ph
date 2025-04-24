@@ -1,5 +1,13 @@
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Card, DatePicker, Form, Input, Space } from "antd";
+import {
+  Button,
+  Card,
+  DatePicker,
+  Form,
+  FormInstance,
+  Input,
+  Space,
+} from "antd";
 
 const { TextArea } = Input;
 interface PersonalDetailsProps {

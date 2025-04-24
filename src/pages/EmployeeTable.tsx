@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../Components/Navbar";
 import { columns, generateDummyData } from "../utitliities/Data";
 import { EmployeeData } from "../utitliities/dataType";
+import { IDate, Item } from "../utitliities/interface";
 
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrBefore);
@@ -46,23 +47,23 @@ const EmployeeTable = () => {
     let result = [...data];
 
     if (propertySearch) {
-      result = result.filter((item: string) =>
+      result = result.filter((item: Item) =>
         item.propertyName.toLowerCase().includes(propertySearch.toLowerCase())
       );
     }
 
     if (employeeSearch) {
-      result = result.filter((item) =>
+      result = result.filter((item: EmployeeData) =>
         item.employeeName.toLowerCase().includes(employeeSearch.toLowerCase())
       );
     }
 
     if (dateType === "today") {
       const today = dayjs().format("YYYY-MM-DD");
-      result = result.filter((item) => item.date === today);
+      result = result.filter((item: IDate) => item.date === today);
     } else if (dateType === "range" && dateRange.length === 2) {
       const [startDate, endDate] = dateRange;
-      result = result.filter((item) => {
+      result = result.filter((item: IDate) => {
         const itemDate = dayjs(item.date);
         return (
           itemDate.isSameOrAfter(startDate, "day") &&
@@ -197,7 +198,11 @@ const EmployeeTable = () => {
                       ? [dayjs(dateRange[0]), dayjs(dateRange[1])]
                       : null
                   }
-                  onChange={(dates) => setDateRange(dates || [])}
+                  onChange={(dates) =>
+                    setDateRange(
+                      dates && dates[0] && dates[1] ? [dates[0], dates[1]] : []
+                    )
+                  }
                   style={{ width: "100%" }}
                 />
               </div>
@@ -229,7 +234,6 @@ const EmployeeTable = () => {
           </div>
         </div>
 
-        {/* Table + Pagination */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <Table
             columns={columns}
@@ -245,7 +249,7 @@ const EmployeeTable = () => {
               total={filteredData.length}
               onChange={(page) => setCurrentPage(page)}
               showSizeChanger
-              onShowSizeChange={(current, size) => {
+              onShowSizeChange={(_, size) => {
                 setPageSize(size);
                 setCurrentPage(1);
               }}

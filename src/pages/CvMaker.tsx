@@ -4,7 +4,7 @@ import {
   ProjectOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Card, Form, Input, Steps, Typography } from "antd";
+import { Card, Form, Steps, Typography } from "antd";
 import { useState } from "react";
 import Academic from "../Components/Academic";
 import Experience from "../Components/Experience";
@@ -14,7 +14,6 @@ import Preview from "../Components/Preview";
 import Projects from "../Components/Projects";
 const { Title } = Typography;
 const { Step } = Steps;
-const { TextArea } = Input;
 const CvMaker = () => {
   const [current, setCurrent] = useState(0);
   const [personalInfo, setPersonalInfo] = useState({});
@@ -43,7 +42,7 @@ const CvMaker = () => {
     },
   ];
 
-  const goToStep = (step) => {
+  const goToStep = (step: number) => {
     setCurrent(step);
   };
 
@@ -51,7 +50,7 @@ const CvMaker = () => {
     setCurrent(current - 1);
   };
 
-  const handleStepSubmit = (values) => {
+  const handleStepSubmit = (values: any) => {
     switch (current) {
       case 0:
         setPersonalInfo(values);
