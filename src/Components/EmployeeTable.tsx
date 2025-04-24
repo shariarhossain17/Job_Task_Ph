@@ -14,6 +14,7 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { useEffect, useState } from "react";
 import { columns, generateDummyData } from "../utitliities/Data";
+import { EmployeeData } from "../utitliities/dataType";
 
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrBefore);
@@ -116,10 +117,13 @@ const EmployeeTable = () => {
   };
 
   const totalTimeWorked = filteredData.reduce(
-    (sum, item) => sum + item.timeWorked,
+    (sum, item: EmployeeData) => sum + item.timeWorked,
     0
   );
-  const totalAmount = filteredData.reduce((sum, item) => sum + item.total, 0);
+  const totalAmount = filteredData.reduce(
+    (sum, item: EmployeeData) => sum + item.total,
+    0
+  );
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * pageSize,
@@ -129,8 +133,6 @@ const EmployeeTable = () => {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <Title level={2}>Employee Work Tracker</Title>
-
-      {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow-md mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <div>
@@ -208,8 +210,6 @@ const EmployeeTable = () => {
           </Button>
         </div>
       </div>
-
-      {/* Summary */}
       <div className="bg-white p-4 rounded-lg shadow-md mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <span className="text-gray-700 font-medium">Total Time Worked:</span>
