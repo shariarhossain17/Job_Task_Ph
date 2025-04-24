@@ -13,15 +13,11 @@ import isBetween from "dayjs/plugin/isBetween";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { useEffect, useState } from "react";
-import { generateDummyData } from "../utitliities/Data";
+import { columns, generateDummyData } from "../utitliities/Data";
 
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
-
-const { RangePicker } = DatePicker;
-const { Title } = Typography;
-const { Option } = Select;
 
 const EmployeeTable = () => {
   const [data, setData] = useState([]);
@@ -29,11 +25,15 @@ const EmployeeTable = () => {
   const [propertySearch, setPropertySearch] = useState("");
   const [employeeSearch, setEmployeeSearch] = useState("");
   const [dateType, setDateType] = useState("today");
-  const [dateRange, setDateRange] = useState([]);
+  const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | []>(
+    []
+  );
   const [predefinedRange, setPredefinedRange] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
+  const { RangePicker } = DatePicker;
+  const { Title } = Typography;
+  const { Option } = Select;
   useEffect(() => {
     const dummyData: any = generateDummyData();
     setData(dummyData);
@@ -73,7 +73,7 @@ const EmployeeTable = () => {
     setCurrentPage(1);
   }, [data, propertySearch, employeeSearch, dateType, dateRange]);
 
-  const handlePredefinedRangeChange = (value) => {
+  const handleSelectRange = (value: string) => {
     setPredefinedRange(value);
     const today = dayjs();
     let start, end;
@@ -120,44 +120,6 @@ const EmployeeTable = () => {
     0
   );
   const totalAmount = filteredData.reduce((sum, item) => sum + item.total, 0);
-
-  const columns = [
-    {
-      title: "Property Name",
-      dataIndex: "propertyName",
-      key: "propertyName",
-      sorter: (a, b) => a.propertyName.localeCompare(b.propertyName),
-    },
-    {
-      title: "Employee Name",
-      dataIndex: "employeeName",
-      key: "employeeName",
-      sorter: (a, b) => a.employeeName.localeCompare(b.employeeName),
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      sorter: (a, b) => dayjs(a.date).unix() - dayjs(b.date).unix(),
-    },
-    {
-      title: "Task",
-      dataIndex: "task",
-      key: "task",
-    },
-    {
-      title: "Time Worked (hours)",
-      dataIndex: "timeWorked",
-      key: "timeWorked",
-      sorter: (a, b) => a.timeWorked - b.timeWorked,
-    },
-    {
-      title: "Total ($)",
-      dataIndex: "total",
-      key: "total",
-      sorter: (a, b) => a.total - b.total,
-    },
-  ];
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * pageSize,
@@ -207,7 +169,7 @@ const EmployeeTable = () => {
               </label>
               <Select
                 value={predefinedRange}
-                onChange={handlePredefinedRangeChange}
+                onChange={handleSelectRange}
                 style={{ width: "100%" }}
               >
                 <Option value="">Custom Range</Option>

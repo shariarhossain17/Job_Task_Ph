@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { EmployeeData } from "./dataType";
 
 export const generateDummyData = (count = 100) => {
   const properties = ["Programming hero", "Amazon", "Google", "Meta", "tesla"];
@@ -35,3 +36,44 @@ export const generateDummyData = (count = 100) => {
     };
   });
 };
+
+export const columns = [
+  {
+    title: "Property Name",
+    dataIndex: "propertyName",
+    key: "propertyName",
+    sorter: (a: EmployeeData, b: EmployeeData) =>
+      a.propertyName.localeCompare(b.propertyName),
+  },
+  {
+    title: "Employee Name",
+    dataIndex: "employeeName",
+    key: "employeeName",
+    sorter: (a: EmployeeData, b: EmployeeData) =>
+      a.employeeName.localeCompare(b.employeeName),
+  },
+  {
+    title: "Date",
+    dataIndex: "date",
+    key: "date",
+    sorter: (a: EmployeeData, b: EmployeeData) =>
+      dayjs(a.date).unix() - dayjs(b.date).unix(),
+  },
+  {
+    title: "Task",
+    dataIndex: "task",
+    key: "task",
+  },
+  {
+    title: "Time Worked (hours)",
+    dataIndex: "timeWorked",
+    key: "timeWorked",
+    sorter: (a: EmployeeData, b: EmployeeData) => a.timeWorked - b.timeWorked,
+  },
+  {
+    title: "Total ($)",
+    dataIndex: "total",
+    key: "total",
+    sorter: (a: EmployeeData, b: EmployeeData) => a.total - b.total,
+  },
+];
