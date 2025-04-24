@@ -1,5 +1,6 @@
 import { FilePdfOutlined, FileWordOutlined } from "@ant-design/icons";
 import { Button, Divider, message, Modal, Typography } from "antd";
+import { Document, HeadingLevel, Packer, Paragraph } from "docx";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { PreviewProps } from "../utitliities/interface";
@@ -35,6 +36,118 @@ const Preview: React.FC<PreviewProps> = ({
       message.success("PDF generated successfully");
     });
   };
+
+  const generateDOCX = () => {
+    message.loading("Generating DOCX...");
+
+    // Create document
+    const doc = new Document({
+      sections: [
+        {
+          children: [
+            new Paragraph({
+              text: `${personalInfo.firstName || ""} ${
+                personalInfo.lastName || ""
+              }`,
+              heading: HeadingLevel.HEADING_1,
+            }),
+            new Paragraph({
+              text: personalInfo.email || "",
+            }),
+            new Paragraph({
+              text: personalInfo.phone || "",
+            }),
+            new Paragraph({
+              text: personalInfo.address || "",
+            }),
+            new Paragraph({
+              text: "",
+            }),
+            new Paragraph({
+              text: "Professional Summary",
+              heading: HeadingLevel.HEADING_2,
+            }),
+            new Paragraph({
+              text: personalInfo.summary || "",
+            }),
+            new Paragraph({
+              text: "",
+            }),
+            new Paragraph({
+              text: "Work Experience",
+              heading: HeadingLevel.HEADING_2,
+            }),
+            ...experiences
+              .filter((exp) => exp.company)
+              .flatMap((exp) => [
+                new Paragraph({
+                  text: `${exp.position || ""} at ${exp.company || ""}`,
+                  heading: HeadingLevel.HEADING_3,
+                }),
+                new Paragraph({
+                  text: `${exp.startDate || ""} - ${exp.endDate || "Present"}`,
+                }),
+                new Paragraph({
+                  text: exp.description || "",
+                }),
+                new Paragraph({
+                  text: "",
+                }),
+              ]),
+            new Paragraph({
+              text: "Projects",
+              heading: HeadingLevel.HEADING_2,
+            }),
+            ...projects
+              .filter((proj) => proj.title)
+              .flatMap((proj) => [
+                new Paragraph({
+                  text: proj.title || "",
+                  heading: HeadingLevel.HEADING_3,
+                }),
+                new Paragraph({
+                  text: proj.description || "",
+                }),
+                new Paragraph({
+                  text: "",
+                }),
+              ]),
+            new Paragraph({
+              text: "Education",
+              heading: HeadingLevel.HEADING_2,
+            }),
+            new Paragraph({
+              text: `${academics.degree || ""} in ${
+                academics.fieldOfStudy || ""
+              }`,
+              heading: HeadingLevel.HEADING_3,
+            }),
+            new Paragraph({
+              text: academics.institution || "",
+            }),
+            new Paragraph({
+              text: `${academics.startYear || ""} - ${academics.endYear || ""}`,
+            }),
+            new Paragraph({
+              text: "",
+            }),
+            new Paragraph({
+              text: "Extracurricular Activities",
+              heading: HeadingLevel.HEADING_2,
+            }),
+            new Paragraph({
+              text: academics.extracurricular || "",
+            }),
+          ],
+        },
+      ],
+    });
+    Packer.toBlob(doc).then((blob) => {
+      saveAs(blob, "cv.docx");
+      message.success("DOCX generated successfully");
+    });
+  };
+
   return (
     <Modal
       title="CV Preview"
