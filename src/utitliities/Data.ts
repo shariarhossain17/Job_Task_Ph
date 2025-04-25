@@ -39,19 +39,13 @@ export const generateDummyData = (count = 100000) => {
 
 export const columns = [
   {
-    title: "Property Name",
-    dataIndex: "propertyName",
-    key: "propertyName",
-    sorter: (a: EmployeeData, b: EmployeeData) =>
-      a.propertyName.localeCompare(b.propertyName),
-  },
-  {
     title: "Employee Name",
     dataIndex: "employeeName",
     key: "employeeName",
     sorter: (a: EmployeeData, b: EmployeeData) =>
       a.employeeName.localeCompare(b.employeeName),
   },
+
   {
     title: "Date",
     dataIndex: "date",
@@ -59,6 +53,14 @@ export const columns = [
     sorter: (a: EmployeeData, b: EmployeeData) =>
       dayjs(a.date).unix() - dayjs(b.date).unix(),
   },
+  {
+    title: "Property Name",
+    dataIndex: "propertyName",
+    key: "propertyName",
+    sorter: (a: EmployeeData, b: EmployeeData) =>
+      a.propertyName.localeCompare(b.propertyName),
+  },
+
   {
     title: "Task",
     dataIndex: "task",
