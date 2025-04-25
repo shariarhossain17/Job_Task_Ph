@@ -63,3 +63,13 @@ export interface EmployeeRecord {
   avgRate: number;
   task: string;
 }
+export type Row = {
+  "Employee Name": string;
+  Date: string;
+  "Property Name": string;
+  "Check In": string;
+  "Check Out": string;
+  "Time Worked (min)": number;
+  "No of Units": number;
+  "Avg. $/Unit": string;
+};

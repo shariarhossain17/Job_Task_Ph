@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { EmployeeRecord } from "./interface";
 
-export const generateDummyData = (count = 1000): EmployeeRecord[] => {
+export const generateDummyData = (count = 100000): EmployeeRecord[] => {
   const employees = [
     "Abu Sufian",
     "Azizul islam milton",
@@ -9,9 +9,9 @@ export const generateDummyData = (count = 1000): EmployeeRecord[] => {
     "Abdur Rakib",
     "Jhnakar Mahabub",
     "Sakib Ahmed",
-    "Super Admin",
-    "Tester Amy",
-    "Test Swankie Pethick",
+    "Rasel Ahmed",
+    "Shabaj khan Toky",
+    "Amar Ex",
   ];
 
   const properties = [
@@ -36,71 +36,6 @@ export const generateDummyData = (count = 1000): EmployeeRecord[] => {
   ];
 
   const data: EmployeeRecord[] = [];
-
-  const originalRecords = [
-    {
-      key: "1",
-      employeeName: "Super Admin",
-      date: "04-23-2025",
-      propertyName: "Zazzle-zizzleburg",
-      checkIn: "1:29 AM",
-      checkOut: "1:31 AM",
-      timeWorked: 2,
-      units: 10,
-      avgRate: 13.69,
-      task: "Manager",
-    },
-    {
-      key: "2",
-      employeeName: "Super Admin",
-      date: "04-23-2025",
-      propertyName: "zzzz-999-kkk-harly",
-      checkIn: "6:15 AM",
-      checkOut: "Invalid Data",
-      timeWorked: 0,
-      units: 10,
-      avgRate: 0.0,
-      task: "Hr",
-    },
-    {
-      key: "3",
-      employeeName: "Super Admin",
-      date: "04-23-2025",
-      propertyName: "ZZ-4",
-      checkIn: "4:57 PM",
-      checkOut: "4:59 PM",
-      timeWorked: 2,
-      units: 10,
-      avgRate: 10.52,
-      task: "Swe",
-    },
-    {
-      key: "4",
-      employeeName: "Tester Amy",
-      date: "04-23-2025",
-      propertyName: "ZZ-1",
-      checkIn: "12:46 PM",
-      checkOut: "12:48 PM",
-      timeWorked: 2,
-      units: 10,
-      avgRate: 9.67,
-      task: "QA",
-    },
-    {
-      key: "5",
-      employeeName: "Test Swankie Pethick",
-      date: "04-23-2025",
-      propertyName: "ZZ-4",
-      checkIn: "12:49 PM",
-      checkOut: "12:50 PM",
-      timeWorked: 1,
-      units: 10,
-      avgRate: 1.81,
-      task: "Web developer",
-    },
-  ];
-
-  data.push(...originalRecords);
 
   for (let i = 6; i <= count; i++) {
     const employeeName =
