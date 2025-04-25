@@ -1,9 +1,7 @@
 import dayjs from "dayjs";
-import { EmployeeData } from "./dataType";
+import { EmployeeRecord } from "./interface";
 
-export const generateDummyData = (count = 100000) => {
-  const properties = ["Programming hero", "Amazon", "Google", "Meta", "tesla"];
-
+export const generateDummyData = (count = 1000): EmployeeRecord[] => {
   const employees = [
     "Abu Sufian",
     "Azizul islam milton",
@@ -11,71 +9,148 @@ export const generateDummyData = (count = 100000) => {
     "Abdur Rakib",
     "Jhnakar Mahabub",
     "Sakib Ahmed",
+    "Super Admin",
+    "Tester Amy",
+    "Test Swankie Pethick",
   ];
+
+  const properties = [
+    "Programming hero",
+    "Amazon",
+    "Google",
+    "Meta",
+    "Tesla",
+    "Zazzle-zizzleburg",
+    "zzzz-999-kkk-harly",
+    "ZZ-1",
+    "ZZ-4",
+  ];
+
   const tasks = [
     "Hr",
     "Manager",
     "Swe",
-    "web developer",
-    "saq",
-    "cyber security expert",
+    "Web developer",
+    "QA",
+    "Cyber security expert",
   ];
 
-  return Array.from({ length: count }, (_, i) => {
-    const date = dayjs().subtract(Math.floor(Math.random() * 60), "day");
-    const hoursWorked = Math.floor(Math.random() * 8) + 1;
+  const data: EmployeeRecord[] = [];
 
-    return {
+  const originalRecords = [
+    {
+      key: "1",
+      employeeName: "Super Admin",
+      date: "04-23-2025",
+      propertyName: "Zazzle-zizzleburg",
+      checkIn: "1:29 AM",
+      checkOut: "1:31 AM",
+      timeWorked: 2,
+      units: 10,
+      avgRate: 13.69,
+      task: "Manager",
+    },
+    {
+      key: "2",
+      employeeName: "Super Admin",
+      date: "04-23-2025",
+      propertyName: "zzzz-999-kkk-harly",
+      checkIn: "6:15 AM",
+      checkOut: "Invalid Data",
+      timeWorked: 0,
+      units: 10,
+      avgRate: 0.0,
+      task: "Hr",
+    },
+    {
+      key: "3",
+      employeeName: "Super Admin",
+      date: "04-23-2025",
+      propertyName: "ZZ-4",
+      checkIn: "4:57 PM",
+      checkOut: "4:59 PM",
+      timeWorked: 2,
+      units: 10,
+      avgRate: 10.52,
+      task: "Swe",
+    },
+    {
+      key: "4",
+      employeeName: "Tester Amy",
+      date: "04-23-2025",
+      propertyName: "ZZ-1",
+      checkIn: "12:46 PM",
+      checkOut: "12:48 PM",
+      timeWorked: 2,
+      units: 10,
+      avgRate: 9.67,
+      task: "QA",
+    },
+    {
+      key: "5",
+      employeeName: "Test Swankie Pethick",
+      date: "04-23-2025",
+      propertyName: "ZZ-4",
+      checkIn: "12:49 PM",
+      checkOut: "12:50 PM",
+      timeWorked: 1,
+      units: 10,
+      avgRate: 1.81,
+      task: "Web developer",
+    },
+  ];
+
+  data.push(...originalRecords);
+
+  for (let i = 6; i <= count; i++) {
+    const employeeName =
+      employees[Math.floor(Math.random() * employees.length)];
+    const propertyName =
+      properties[Math.floor(Math.random() * properties.length)];
+    const task = tasks[Math.floor(Math.random() * tasks.length)];
+
+    const date = dayjs()
+      .subtract(Math.floor(Math.random() * 60), "day")
+      .format("MM-DD-YYYY");
+
+    const hour = Math.floor(Math.random() * 24);
+    const minute = Math.floor(Math.random() * 60);
+    const checkInTime = dayjs().hour(hour).minute(minute);
+    const checkIn = checkInTime.format("h:mm A");
+
+    const hasInvalidData = Math.random() < 0.05;
+
+    let checkOut, timeWorked;
+    if (hasInvalidData) {
+      checkOut = "Invalid Data";
+      timeWorked = 0;
+    } else {
+      const durationMinutes = Math.floor(Math.random() * 480) + 1;
+      const checkOutTime = checkInTime.add(durationMinutes, "minute");
+      checkOut = checkOutTime.format("h:mm A");
+      timeWorked = durationMinutes;
+    }
+
+    const units = 10;
+
+    const avgRate = hasInvalidData
+      ? 0.0
+      : Number.parseFloat((Math.random() * 20).toFixed(2));
+
+    data.push({
       key: i.toString(),
-      propertyName: properties[Math.floor(Math.random() * properties.length)],
-      employeeName: employees[Math.floor(Math.random() * employees.length)],
-      date: date.format("YYYY-MM-DD"),
-      task: tasks[Math.floor(Math.random() * tasks.length)],
-      timeWorked: hoursWorked,
-      total: hoursWorked * 15,
-    };
-  });
+      employeeName,
+      date,
+      propertyName,
+      checkIn,
+      checkOut,
+      timeWorked,
+      units,
+      avgRate,
+      task,
+    });
+  }
+
+  console.timeEnd("Data Generation");
+  return data;
 };
-
-export const columns = [
-  {
-    title: "Employee Name",
-    dataIndex: "employeeName",
-    key: "employeeName",
-    sorter: (a: EmployeeData, b: EmployeeData) =>
-      a.employeeName.localeCompare(b.employeeName),
-  },
-
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-    sorter: (a: EmployeeData, b: EmployeeData) =>
-      dayjs(a.date).unix() - dayjs(b.date).unix(),
-  },
-  {
-    title: "Property Name",
-    dataIndex: "propertyName",
-    key: "propertyName",
-    sorter: (a: EmployeeData, b: EmployeeData) =>
-      a.propertyName.localeCompare(b.propertyName),
-  },
-
-  {
-    title: "Task",
-    dataIndex: "task",
-    key: "task",
-  },
-  {
-    title: "Time Worked (hours)",
-    dataIndex: "timeWorked",
-    key: "timeWorked",
-    sorter: (a: EmployeeData, b: EmployeeData) => a.timeWorked - b.timeWorked,
-  },
-  {
-    title: "Total ($)",
-    dataIndex: "total",
-    key: "total",
-    sorter: (a: EmployeeData, b: EmployeeData) => a.total - b.total,
-  },
-];

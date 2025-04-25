@@ -51,3 +51,15 @@ export interface PreviewProps {
   previewVisible: boolean;
   setPreviewVisible: (visible: boolean) => void;
 }
+export interface EmployeeRecord {
+  key: string;
+  employeeName: string;
+  date: string;
+  propertyName: string;
+  checkIn: string;
+  checkOut: string;
+  timeWorked: number;
+  units: number;
+  avgRate: number;
+  task: string;
+}

@@ -1,4 +1,10 @@
-import { FilterOutlined, SearchOutlined } from "@ant-design/icons";
+"use client";
+
+import {
+  ClearOutlined,
+  DownloadOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   DatePicker,
@@ -8,260 +14,305 @@ import {
   Table,
   Typography,
 } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import isBetween from "dayjs/plugin/isBetween";
-import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { useEffect, useState } from "react";
-import Navbar from "../Components/Navbar";
-import { columns, generateDummyData } from "../utitliities/Data";
-import { EmployeeData } from "../utitliities/dataType";
-import { IDate, Item } from "../utitliities/interface";
+import { generateDummyData } from "../utitliities/Data";
+import { EmployeeRecord } from "../utitliities/interface";
 
-dayjs.extend(isBetween);
-dayjs.extend(isSameOrBefore);
-dayjs.extend(isSameOrAfter);
+const { Title } = Typography;
+const { Option } = Select;
 
-const EmployeeTable = () => {
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [propertySearch, setPropertySearch] = useState("");
-  const [employeeSearch, setEmployeeSearch] = useState("");
-  const [dateType, setDateType] = useState("today");
-  const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | []>(
-    []
+export default function EmployeeTable() {
+  const [data, setData] = useState<EmployeeRecord[]>([]);
+  const [filteredData, setFilteredData] = useState<EmployeeRecord[]>([]);
+  const [searchText, setSearchText] = useState("");
+  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(
+    dayjs("2025-04-23")
   );
-  const [predefinedRange, setPredefinedRange] = useState("");
+  const [dateRange, setDateRange] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const { RangePicker } = DatePicker;
-  const { Title } = Typography;
-  const { Option } = Select;
+
   useEffect(() => {
-    const dummyData: any = generateDummyData();
+    const dummyData = generateDummyData();
     setData(dummyData);
     setFilteredData(dummyData);
   }, []);
 
+  console.log(data);
+
   useEffect(() => {
     let result = [...data];
 
-    if (propertySearch) {
-      result = result.filter((item: Item) =>
-        item.propertyName.toLowerCase().includes(propertySearch.toLowerCase())
+    if (searchText) {
+      result = result.filter(
+        (item) =>
+          item.propertyName.toLowerCase().includes(searchText.toLowerCase()) ||
+          item.employeeName.toLowerCase().includes(searchText.toLowerCase())
       );
     }
 
-    if (employeeSearch) {
-      result = result.filter((item: EmployeeData) =>
-        item.employeeName.toLowerCase().includes(employeeSearch.toLowerCase())
-      );
-    }
-
-    if (dateType === "today") {
-      const today = dayjs().format("YYYY-MM-DD");
-      result = result.filter((item: IDate) => item.date === today);
-    } else if (dateType === "range" && dateRange.length === 2) {
-      const [startDate, endDate] = dateRange;
-      result = result.filter((item: IDate) => {
-        const itemDate = dayjs(item.date);
-        return (
-          itemDate.isSameOrAfter(startDate, "day") &&
-          itemDate.isSameOrBefore(endDate, "day")
-        );
+    if (selectedDate) {
+      const formattedDate = selectedDate.format("MM-DD-YYYY");
+      result = result.filter((item) => {
+        const itemDate = item.date;
+        return itemDate === formattedDate;
       });
     }
 
     setFilteredData(result);
     setCurrentPage(1);
-  }, [data, propertySearch, employeeSearch, dateType, dateRange]);
-
-  const handleSelectRange = (value: string) => {
-    setPredefinedRange(value);
-    const today = dayjs();
-    let start, end;
-
-    switch (value) {
-      case "current_week":
-        start = today.startOf("week");
-        end = today.endOf("week");
-        break;
-      case "last_week":
-        start = today.subtract(1, "week").startOf("week");
-        end = today.subtract(1, "week").endOf("week");
-        break;
-      case "current_month":
-        start = today.startOf("month");
-        end = today.endOf("month");
-        break;
-      case "last_month":
-        start = today.subtract(1, "month").startOf("month");
-        end = today.subtract(1, "month").endOf("month");
-        break;
-      default:
-        start = null;
-        end = null;
-    }
-
-    if (start && end) {
-      setDateRange([start, end]);
-      setDateType("range");
-    }
-  };
+  }, [data, searchText, selectedDate, dateRange]);
 
   const clearFilters = () => {
-    setPropertySearch("");
-    setEmployeeSearch("");
-    setDateType("today");
-    setDateRange([]);
-    setPredefinedRange("");
+    setSearchText("");
+    setSelectedDate(dayjs("2025-04-23"));
+    setDateRange("");
     setFilteredData(data);
   };
 
-  const totalTimeWorked = filteredData.reduce(
-    (sum, item: EmployeeData) => sum + item.timeWorked,
-    0
-  );
-  const totalAmount = filteredData.reduce(
-    (sum, item: EmployeeData) => sum + item.total,
-    0
-  );
+  const downloadCSV = () => {
+    const headers = [
+      "Employee Name",
+      "Date",
+      "Property Name",
+      "Check In",
+      "Check Out",
+      "Time Worked",
+      "No of Units",
+      "Avg. $/Unit",
+    ];
+    const csvContent = [
+      headers.join(","),
+      ...filteredData.map((item) =>
+        [
+          item.employeeName,
+          item.date,
+          item.propertyName,
+          item.checkIn,
+          item.checkOut,
+          item.timeWorked,
+          item.units,
+          item.avgRate,
+        ].join(",")
+      ),
+    ].join("\n");
 
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "payroll_list.csv");
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const groupedData: Record<string, EmployeeRecord[]> = {};
+  filteredData.forEach((record) => {
+    if (!groupedData[record.employeeName]) {
+      groupedData[record.employeeName] = [];
+    }
+    groupedData[record.employeeName].push(record);
+  });
+
+  const getPaginatedData = () => {
+    const employeeNames = Object.keys(groupedData);
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, employeeNames.length);
+    const currentEmployees = employeeNames.slice(startIndex, endIndex);
+
+    const result: (
+      | EmployeeRecord
+      | {
+          key: string;
+          isSubtotal: boolean;
+          employeeName: string;
+          timeWorked: number;
+          units: number;
+          avgRate: number;
+        }
+    )[] = [];
+
+    currentEmployees.forEach((employeeName) => {
+      const records = groupedData[employeeName];
+
+      result.push(...records);
+
+      const totalTimeWorked = records.reduce(
+        (sum, record) => sum + record.timeWorked,
+        0
+      );
+      const totalUnits = records.reduce((sum, record) => sum + record.units, 0);
+      const avgRate =
+        records.reduce(
+          (sum, record) => sum + record.avgRate * record.units,
+          0
+        ) / totalUnits;
+
+      result.push({
+        key: `subtotal-${employeeName}`,
+        isSubtotal: true,
+        employeeName: "Total Time Worked",
+        timeWorked: totalTimeWorked,
+        units: totalUnits,
+        avgRate: avgRate,
+      });
+    });
+
+    return result;
+  };
+
+  const columns: ColumnsType<any> = [
+    {
+      title: "Employee Name",
+      dataIndex: "employeeName",
+      key: "employeeName",
+      width: 180,
+      render: (text, record) => {
+        if (record.isSubtotal) {
+          return <strong>{text}</strong>;
+        }
+        return text;
+      },
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: 120,
+    },
+    {
+      title: "Property Name",
+      dataIndex: "propertyName",
+      key: "propertyName",
+      width: 180,
+    },
+    {
+      title: "Check In",
+      dataIndex: "checkIn",
+      key: "checkIn",
+      width: 120,
+    },
+    {
+      title: "Check Out",
+      dataIndex: "checkOut",
+      key: "checkOut",
+      width: 120,
+      render: (text) => {
+        if (text === "Invalid Data") {
+          return <span className="text-red-500">{text}</span>;
+        }
+        return text;
+      },
+    },
+    {
+      title: "Time Worked",
+      dataIndex: "timeWorked",
+      key: "timeWorked",
+      width: 120,
+      render: (value) => `${value} min`,
+    },
+    {
+      title: "No of Units",
+      dataIndex: "units",
+      key: "units",
+      width: 120,
+    },
+    {
+      title: "Avg. $/Unit",
+      dataIndex: "avgRate",
+      key: "avgRate",
+      width: 120,
+      render: (value) => value.toFixed(2),
+    },
+  ];
 
   return (
-    <>
-      <Navbar></Navbar>
+    <div className="p-6 max-w-6xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <Title level={2} className="m-0">
+          Payroll List
+        </Title>
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={downloadCSV}
+        >
+          Download CSV
+        </Button>
+      </div>
 
-      <div className="p-6 max-w-6xl mx-auto">
-        <Title level={2}>Employee Work Tracker</Title>
-        <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium">Property Name</label>
-              <Input
-                value={propertySearch}
-                onChange={(e) => setPropertySearch(e.target.value)}
-                prefix={<SearchOutlined />}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Employee Name</label>
-              <Input
-                value={employeeSearch}
-                onChange={(e) => setEmployeeSearch(e.target.value)}
-                prefix={<SearchOutlined />}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">
-                Date Filter Type
-              </label>
-              <Select
-                value={dateType}
-                onChange={setDateType}
-                style={{ width: "100%" }}
-              >
-                <Option value="today">Today</Option>
-                <Option value="range">Date Range</Option>
-              </Select>
-            </div>
-            {dateType === "range" && (
-              <div>
-                <label className="block text-sm font-medium">
-                  Predefined Range
-                </label>
-                <Select
-                  value={predefinedRange}
-                  onChange={handleSelectRange}
-                  style={{ width: "100%" }}
-                >
-                  <Option value="">Custom Range</Option>
-                  <Option value="current_week">Current Week</Option>
-                  <Option value="last_week">Last Week</Option>
-                  <Option value="current_month">Current Month</Option>
-                  <Option value="last_month">Last Month</Option>
-                </Select>
-              </div>
-            )}
-            {dateType === "range" && predefinedRange === "" && (
-              <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm font-medium">
-                  Custom Date Range
-                </label>
-                <RangePicker
-                  value={
-                    dateRange.length
-                      ? [dayjs(dateRange[0]), dayjs(dateRange[1])]
-                      : null
-                  }
-                  onChange={(dates) =>
-                    setDateRange(
-                      dates && dates[0] && dates[1] ? [dates[0], dates[1]] : []
-                    )
-                  }
-                  style={{ width: "100%" }}
-                />
-              </div>
-            )}
+      <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+        <div className="flex flex-wrap gap-4 items-end">
+          <div className="flex-1 min-w-[200px]">
+            <Input
+              placeholder="Search by Property or Employee"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              prefix={<SearchOutlined />}
+            />
           </div>
 
-          <div className="flex justify-end">
-            <Button
-              type="primary"
-              icon={<FilterOutlined />}
-              onClick={clearFilters}
+          <div>
+            <DatePicker
+              value={selectedDate}
+              onChange={setSelectedDate}
+              format="MM-DD-YYYY"
+              allowClear={false}
+            />
+          </div>
+
+          <div>
+            <Select
+              placeholder="Select a date range"
+              style={{ width: 180 }}
+              value={dateRange || undefined}
+              onChange={setDateRange}
             >
-              Clear Filters
-            </Button>
+              <Option value="today">Today</Option>
+              <Option value="yesterday">Yesterday</Option>
+              <Option value="this_week">This Week</Option>
+              <Option value="last_week">Last Week</Option>
+              <Option value="this_month">This Month</Option>
+              <Option value="last_month">Last Month</Option>
+            </Select>
           </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-md mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <span className="text-gray-700 font-medium">
-              Total Time Worked:
-            </span>
-            <span className="ml-2 text-lg font-bold">
-              {totalTimeWorked} hours
-            </span>
-          </div>
-          <div>
-            <span className="text-gray-700 font-medium">Total Amount:</span>
-            <span className="ml-2 text-lg font-bold">${totalAmount}</span>
-          </div>
-        </div>
 
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <Table
-            columns={columns}
-            dataSource={paginatedData}
-            pagination={false}
-            scroll={{ x: 1000 }}
-            sticky={{ offsetHeader: 0 }}
-          />
-          <div className="p-4 flex justify-end">
+          <Button onClick={clearFilters} icon={<ClearOutlined />}>
+            Clear Filters
+          </Button>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <Table
+          columns={columns}
+          dataSource={getPaginatedData()}
+          pagination={false}
+          rowClassName={(record) => (record.isSubtotal ? "bg-gray-100" : "")}
+          scroll={{ x: 1000 }}
+          sticky={{ offsetHeader: 0 }}
+        />
+
+        <div className="p-4 flex justify-between items-center">
+          <div>Total {Object.keys(groupedData).length} employees</div>
+          <div className="flex items-center gap-2">
             <Pagination
               current={currentPage}
               pageSize={pageSize}
-              total={filteredData.length}
+              total={Object.keys(groupedData).length}
               onChange={(page) => setCurrentPage(page)}
-              showSizeChanger
-              onShowSizeChange={(_, size) => {
-                setPageSize(size);
-                setCurrentPage(1);
-              }}
-              showTotal={(total, range) =>
-                `${range[0]}-${range[1]} of ${total} items`
-              }
+              size="small"
+              simple
             />
+            <span>{pageSize} / page</span>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
-};
-
-export default EmployeeTable;
+}
