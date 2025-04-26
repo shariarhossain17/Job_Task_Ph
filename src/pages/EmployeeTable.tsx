@@ -218,6 +218,7 @@ export default function EmployeeTable() {
 
   const getPaginatedData = () => {
     const employeeNames = Object.keys(groupedData);
+
     const employeesPerPage = 2;
 
     const startIndex = (currentPage - 1) * employeesPerPage;
@@ -261,13 +262,36 @@ export default function EmployeeTable() {
 
     return result;
   };
-
   const columns: ColumnsType<any> = [
     {
       title: "Employee Name",
       dataIndex: "employeeName",
       key: "employeeName",
-      render: (text, record) => (record.isSubtotal ? "" : text),
+      render: (text, record, index) => {
+        if (record.isSubtotal) {
+          return { children: "", props: { rowSpan: 0 } };
+        }
+
+        const currentData = getPaginatedData();
+        const previousRecord = currentData[index - 1];
+
+        if (
+          previousRecord &&
+          previousRecord.employeeName === record.employeeName
+        ) {
+          return { children: null, props: { rowSpan: 0 } };
+        }
+
+        const employeeRows = currentData.filter(
+          (item) =>
+            item.employeeName === record.employeeName && !item.isSubtotal
+        ).length;
+
+        return {
+          children: text,
+          props: { rowSpan: employeeRows },
+        };
+      },
     },
     {
       title: "Date",
@@ -279,24 +303,37 @@ export default function EmployeeTable() {
       title: "Property Name",
       dataIndex: "propertyName",
       key: "propertyName",
-      render: (text, record) =>
-        record.isSubtotal ? (
-          <strong style={{ whiteSpace: "nowrap" }}>{text}</strong>
-        ) : (
-          text
-        ),
+      render: (text, record) => {
+        if (record.isSubtotal) {
+          return {
+            children: <strong style={{ whiteSpace: "nowrap" }}>{text}</strong>,
+            props: { colSpan: 4, align: "center" },
+          };
+        }
+        return { children: text, props: {} };
+      },
     },
     {
       title: "Check In",
       dataIndex: "checkIn",
       key: "checkIn",
-      render: (_, record) => (record.isSubtotal ? "" : record.checkIn),
+      render: (_, record) => {
+        if (record.isSubtotal) {
+          return { children: null, props: { colSpan: 0 } }; // Hide cell
+        }
+        return { children: record.checkIn, props: {} };
+      },
     },
     {
       title: "Check Out",
       dataIndex: "checkOut",
       key: "checkOut",
-      render: (_, record) => (record.isSubtotal ? "" : record.checkOut),
+      render: (_, record) => {
+        if (record.isSubtotal) {
+          return { children: null, props: { colSpan: 0 } }; // Hide cell
+        }
+        return { children: record.checkOut, props: {} };
+      },
     },
     {
       title: "Time Worked",
@@ -399,22 +436,26 @@ export default function EmployeeTable() {
             dataSource={getPaginatedData()}
             pagination={false}
             scroll={{ x: 1000, y: 350 }}
+            className="custom-table"
           />
           <div className="p-4 flex justify-between items-center">
             <div>Total {filteredData.length} records</div>
-            <Pagination
-              current={currentPage}
-              pageSize={2}
-              total={Object.keys(groupedData).length}
-              onChange={(page) => setCurrentPage(page)}
-              showSizeChanger={false}
-              itemRender={(page, type, originalElement) => {
-                if (type === "page") {
-                  return <Button size="small">{page}</Button>;
-                }
-                return originalElement;
-              }}
-            />
+            <div className="flex items-center">
+              <div>Total {Object.keys(groupedData).length} employees</div>
+              <Pagination
+                current={currentPage}
+                pageSize={2}
+                total={Object.keys(groupedData).length}
+                onChange={(page) => setCurrentPage(page)}
+                showSizeChanger={false}
+                itemRender={(page, type, originalElement) => {
+                  if (type === "page") {
+                    return <Button size="small">{page}</Button>;
+                  }
+                  return originalElement;
+                }}
+              />
+            </div>
           </div>
         </Spin>
       </div>

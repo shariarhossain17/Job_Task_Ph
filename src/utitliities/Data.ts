@@ -6,13 +6,13 @@ export const generateDummyData = (count = 100000): EmployeeRecord[] => {
 
   const employees = [
     "Abu Sufian",
-    "Azizul islam milton",
-    "Shahriar Hossain",
+    "MIlton",
+    "Shahriar ",
     "Abdur Rakib",
     "Jhnakar Mahabub",
     "Sakib Ahmed",
     "Rasel Ahmed",
-    "Shabaj khan Toky",
+    "Shabaj khan",
     "Amar Ex",
   ];
 

@@ -1,1 +1,18 @@
 @import "tailwindcss";
+.custom-table .ant-table-tbody > tr:hover {
+  background-color: transparent !important;
+}
+
+/* Optionally, remove selected row background color */
+.custom-table .ant-table-tbody > tr.ant-table-row-selected {
+  background-color: transparent !important;
+}
+tr {
+  background-color: none;
+}
+td {
+  background: none !important;
+}
+th {
+  background: none;
+}
