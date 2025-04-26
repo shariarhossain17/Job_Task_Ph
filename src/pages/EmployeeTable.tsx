@@ -237,6 +237,7 @@ export default function EmployeeTable() {
         (sum, record) => sum + record.timeWorked,
         0
       );
+
       const totalUnits = records.reduce((sum, record) => sum + record.units, 0);
       const totalValue = records.reduce(
         (sum, record) => sum + record.avgRate * record.units,
@@ -247,7 +248,11 @@ export default function EmployeeTable() {
       result.push({
         key: `subtotal-${employeeName}`,
         isSubtotal: true,
-        employeeName: "Total Time Worked",
+        employeeName: "",
+        date: "",
+        propertyName: "Total Time Worked",
+        checkIn: "",
+        checkOut: "",
         timeWorked: totalTimeWorked,
         units: totalUnits,
         avgRate: avgRate,
@@ -262,51 +267,70 @@ export default function EmployeeTable() {
       title: "Employee Name",
       dataIndex: "employeeName",
       key: "employeeName",
-      render: (text, record) =>
-        record.isSubtotal ? <strong>{text}</strong> : text,
+      render: (text, record) => (record.isSubtotal ? "" : text),
     },
     {
       title: "Date",
       dataIndex: "date",
       key: "date",
+      render: (text, record) => (record.isSubtotal ? "" : text),
     },
     {
       title: "Property Name",
       dataIndex: "propertyName",
       key: "propertyName",
+      render: (text, record) =>
+        record.isSubtotal ? (
+          <strong style={{ whiteSpace: "nowrap" }}>{text}</strong>
+        ) : (
+          text
+        ),
     },
     {
       title: "Check In",
       dataIndex: "checkIn",
       key: "checkIn",
+      render: (_, record) => (record.isSubtotal ? "" : record.checkIn),
     },
     {
       title: "Check Out",
       dataIndex: "checkOut",
       key: "checkOut",
+      render: (_, record) => (record.isSubtotal ? "" : record.checkOut),
     },
     {
       title: "Time Worked",
       dataIndex: "timeWorked",
       key: "timeWorked",
-      render: (value) => `${value} min`,
+      align: "center",
+      render: (value, record) =>
+        record.isSubtotal ? <strong>{value} min</strong> : `${value} min`,
     },
     {
       title: "No of Units",
       dataIndex: "units",
       key: "units",
+      align: "center",
+      render: (value, record) =>
+        record.isSubtotal ? <strong>{value}</strong> : value,
     },
     {
       title: "Avg. $/Unit",
       dataIndex: "avgRate",
       key: "avgRate",
-      render: (value) => value.toFixed(2),
+      align: "center",
+      render: (value, record) =>
+        record.isSubtotal ? (
+          <strong>{value.toFixed(2)}</strong>
+        ) : (
+          value.toFixed(2)
+        ),
     },
   ];
 
   return (
     <>
-      <Navbar></Navbar>
+      <Navbar />
       <div className="p-6 max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -341,7 +365,7 @@ export default function EmployeeTable() {
               value={selectedDate}
               onChange={setSelectedDate}
               format="MM-DD-YYYY"
-              allowClear={true}
+              allowClear
               style={{ width: "150px", height: "40px" }}
             />
 
@@ -374,7 +398,7 @@ export default function EmployeeTable() {
             columns={columns}
             dataSource={getPaginatedData()}
             pagination={false}
-            scroll={{ x: 1000 }}
+            scroll={{ x: 1000, y: 350 }}
           />
           <div className="p-4 flex justify-between items-center">
             <div>Total {filteredData.length} records</div>

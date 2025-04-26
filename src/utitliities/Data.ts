@@ -2,6 +2,8 @@ import dayjs from "dayjs";
 import { EmployeeRecord } from "./interface";
 
 export const generateDummyData = (count = 100000): EmployeeRecord[] => {
+  console.time("Data Generation");
+
   const employees = [
     "Abu Sufian",
     "Azizul islam milton",
@@ -50,27 +52,31 @@ export const generateDummyData = (count = 100000): EmployeeRecord[] => {
 
     const hour = Math.floor(Math.random() * 24);
     const minute = Math.floor(Math.random() * 60);
-    const checkInTime = dayjs().hour(hour).minute(minute);
-    const checkIn = checkInTime.format("h:mm A");
+    const second = Math.floor(Math.random() * 60);
+    const checkInTime = dayjs().hour(hour).minute(minute).second(second);
 
     const hasInvalidData = Math.random() < 0.05;
 
-    let checkOut, timeWorked;
+    let checkOutTime, checkOut, totalSeconds, timeWorked, units, avgRate;
     if (hasInvalidData) {
       checkOut = "Invalid Data";
+      totalSeconds = 0;
       timeWorked = 0;
+      units = 0;
+      avgRate = 0.0;
     } else {
-      const durationMinutes = Math.floor(Math.random() * 480) + 1;
-      const checkOutTime = checkInTime.add(durationMinutes, "minute");
+      const durationSeconds = Math.floor(Math.random() * (600 - 60 + 1)) + 60;
+      checkOutTime = checkInTime.add(durationSeconds, "second");
+
+      totalSeconds = durationSeconds;
+      timeWorked = Math.round(totalSeconds / 60);
+      units = timeWorked * 5;
+      avgRate = units > 0 ? Number((totalSeconds / units).toFixed(2)) : 0.0;
+
       checkOut = checkOutTime.format("h:mm A");
-      timeWorked = durationMinutes;
     }
 
-    const units = 10;
-
-    const avgRate = hasInvalidData
-      ? 0.0
-      : Number.parseFloat((Math.random() * 20).toFixed(2));
+    const checkIn = checkInTime.format("h:mm A");
 
     data.push({
       key: i.toString(),
@@ -79,6 +85,7 @@ export const generateDummyData = (count = 100000): EmployeeRecord[] => {
       propertyName,
       checkIn,
       checkOut,
+      totalSeconds,
       timeWorked,
       units,
       avgRate,

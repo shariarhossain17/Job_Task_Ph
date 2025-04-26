@@ -62,6 +62,7 @@ export interface EmployeeRecord {
   units: number;
   avgRate: number;
   task: string;
+  totalSeconds: number;
 }
 export type Row = {
   "Employee Name": string;
