@@ -306,8 +306,12 @@ export default function EmployeeTable() {
       render: (text, record) => {
         if (record.isSubtotal) {
           return {
-            children: <strong style={{ whiteSpace: "nowrap" }}>{text}</strong>,
-            props: { colSpan: 4, align: "center" },
+            children: (
+              <strong style={{ whiteSpace: "nowrap", marginLeft: "130px" }}>
+                {text}
+              </strong>
+            ),
+            props: { colSpan: 4, style: { marginLeft: "20px" } },
           };
         }
         return { children: text, props: {} };
@@ -319,7 +323,7 @@ export default function EmployeeTable() {
       key: "checkIn",
       render: (_, record) => {
         if (record.isSubtotal) {
-          return { children: null, props: { colSpan: 0 } }; // Hide cell
+          return { children: null, props: { colSpan: 0 } };
         }
         return { children: record.checkIn, props: {} };
       },
@@ -330,7 +334,7 @@ export default function EmployeeTable() {
       key: "checkOut",
       render: (_, record) => {
         if (record.isSubtotal) {
-          return { children: null, props: { colSpan: 0 } }; // Hide cell
+          return { children: null, props: { colSpan: 0 } };
         }
         return { children: record.checkOut, props: {} };
       },
