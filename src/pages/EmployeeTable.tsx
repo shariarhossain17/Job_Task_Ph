@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ClearOutlined,
   DownloadOutlined,
@@ -21,6 +19,7 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { useEffect, useState } from "react";
 import Navbar from "../Components/Navbar";
+import TopEmployee from "../Components/TopEmployee";
 import { generateDummyData } from "../utitliities/Data";
 import type { EmployeeRecord, Row } from "../utitliities/interface";
 
@@ -41,6 +40,9 @@ export default function EmployeeTable() {
   const [groupedData, setGroupedData] = useState<{
     [key: string]: EmployeeRecord[];
   }>({});
+
+  const [topWorker, setTopWorker] = useState<string | null>(null);
+  const [mostEfficient, setMostEfficient] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -86,14 +88,12 @@ export default function EmployeeTable() {
               (item) => item.date === today.format("MM-DD-YYYY")
             );
             break;
-
           case "yesterday":
             const yesterday = today.subtract(1, "day");
             result = result.filter(
               (item) => item.date === yesterday.format("MM-DD-YYYY")
             );
             break;
-
           case "this_week":
             startDate = today.startOf("week");
             endDate = today.endOf("week");
@@ -105,7 +105,6 @@ export default function EmployeeTable() {
               );
             });
             break;
-
           case "last_week":
             startDate = today.subtract(1, "week").startOf("week");
             endDate = today.subtract(1, "week").endOf("week");
@@ -117,7 +116,6 @@ export default function EmployeeTable() {
               );
             });
             break;
-
           case "this_month":
             startDate = today.startOf("month");
             endDate = today.endOf("month");
@@ -129,7 +127,6 @@ export default function EmployeeTable() {
               );
             });
             break;
-
           case "last_month":
             startDate = today.subtract(1, "month").startOf("month");
             endDate = today.subtract(1, "month").endOf("month");
@@ -159,6 +156,39 @@ export default function EmployeeTable() {
         {}
       );
       setGroupedData(grouped);
+
+      // 🏆 Bonus Calculation
+      let maxHours = 0;
+      let maxEfficiency = 0;
+      let topWorkerName = "";
+      let mostEfficientName = "";
+
+      for (const [employeeName, records] of Object.entries(grouped)) {
+        const totalTimeWorked = records.reduce(
+          (sum, record) => sum + record.timeWorked,
+          0
+        );
+        const totalUnits = records.reduce(
+          (sum, record) => sum + record.units,
+          0
+        );
+
+        const efficiency =
+          totalTimeWorked > 0 ? totalUnits / (totalTimeWorked / 60) : 0;
+
+        if (totalTimeWorked > maxHours) {
+          maxHours = totalTimeWorked;
+          topWorkerName = employeeName;
+        }
+
+        if (efficiency > maxEfficiency) {
+          maxEfficiency = efficiency;
+          mostEfficientName = employeeName;
+        }
+      }
+
+      setTopWorker(topWorkerName || null);
+      setMostEfficient(mostEfficientName || null);
 
       setLoading(false);
     }, 300);
@@ -195,7 +225,6 @@ export default function EmployeeTable() {
       csvData.forEach((row) => {
         const values = headers.map((header) => {
           const value = row[header as keyof Row];
-
           return typeof value === "string" &&
             (value.includes(",") || value.includes('"'))
             ? `"${value.replace(/"/g, '""')}"`
@@ -238,7 +267,6 @@ export default function EmployeeTable() {
         (sum, record) => sum + record.timeWorked,
         0
       );
-
       const totalUnits = records.reduce((sum, record) => sum + record.units, 0);
       const totalValue = records.reduce(
         (sum, record) => sum + record.avgRate * record.units,
@@ -262,6 +290,7 @@ export default function EmployeeTable() {
 
     return result;
   };
+
   const columns: ColumnsType<any> = [
     {
       title: "Employee Name",
@@ -311,7 +340,7 @@ export default function EmployeeTable() {
                 {text}
               </strong>
             ),
-            props: { colSpan: 4, style: { marginLeft: "20px" } },
+            props: { colSpan: 4 },
           };
         }
         return { children: text, props: {} };
@@ -321,23 +350,19 @@ export default function EmployeeTable() {
       title: "Check In",
       dataIndex: "checkIn",
       key: "checkIn",
-      render: (_, record) => {
-        if (record.isSubtotal) {
-          return { children: null, props: { colSpan: 0 } };
-        }
-        return { children: record.checkIn, props: {} };
-      },
+      render: (_, record) =>
+        record.isSubtotal
+          ? { children: null, props: { colSpan: 0 } }
+          : record.checkIn,
     },
     {
       title: "Check Out",
       dataIndex: "checkOut",
       key: "checkOut",
-      render: (_, record) => {
-        if (record.isSubtotal) {
-          return { children: null, props: { colSpan: 0 } };
-        }
-        return { children: record.checkOut, props: {} };
-      },
+      render: (_, record) =>
+        record.isSubtotal
+          ? { children: null, props: { colSpan: 0 } }
+          : record.checkOut,
     },
     {
       title: "Time Worked",
@@ -391,6 +416,11 @@ export default function EmployeeTable() {
           </Button>
         </div>
 
+        <TopEmployee
+          topWorker={topWorker}
+          mostEfficient={mostEfficient}
+        ></TopEmployee>
+
         <div className="bg-white p-4 rounded-lg shadow-md mb-6">
           <div className="flex flex-wrap gap-4 items-center">
             <Input
@@ -401,7 +431,6 @@ export default function EmployeeTable() {
               allowClear
               style={{ width: "300px", height: "40px" }}
             />
-
             <DatePicker
               value={selectedDate}
               onChange={setSelectedDate}
@@ -409,7 +438,6 @@ export default function EmployeeTable() {
               allowClear
               style={{ width: "150px", height: "40px" }}
             />
-
             <Select
               placeholder="Select a date range"
               value={dateRange || undefined}
@@ -423,7 +451,6 @@ export default function EmployeeTable() {
               <Option value="this_month">This Month</Option>
               <Option value="last_month">Last Month</Option>
             </Select>
-
             <Button
               icon={<ClearOutlined />}
               onClick={clearFilters}
@@ -452,12 +479,6 @@ export default function EmployeeTable() {
                 total={Object.keys(groupedData).length}
                 onChange={(page) => setCurrentPage(page)}
                 showSizeChanger={false}
-                itemRender={(page, type, originalElement) => {
-                  if (type === "page") {
-                    return <Button size="small">{page}</Button>;
-                  }
-                  return originalElement;
-                }}
               />
             </div>
           </div>
