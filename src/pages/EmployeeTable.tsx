@@ -157,27 +157,30 @@ export default function EmployeeTable() {
       );
       setGroupedData(grouped);
 
-      // 🏆 Bonus Calculation
       let maxHours = 0;
       let maxEfficiency = 0;
       let topWorkerName = "";
       let mostEfficientName = "";
 
       for (const [employeeName, records] of Object.entries(grouped)) {
-        const totalTimeWorked = records.reduce(
-          (sum, record) => sum + record.timeWorked,
+        const totalSeconds = records.reduce(
+          (sum, record) => sum + record.totalSeconds,
           0
         );
+
         const totalUnits = records.reduce(
-          (sum, record) => sum + record.units,
+          (sum, record) => sum + record.totalSeconds * 0.0833,
           0
         );
 
+        const totalTimeWorkedInMinutes = totalSeconds / 60;
         const efficiency =
-          totalTimeWorked > 0 ? totalUnits / (totalTimeWorked / 60) : 0;
+          totalTimeWorkedInMinutes > 0
+            ? totalUnits / totalTimeWorkedInMinutes
+            : 0;
 
-        if (totalTimeWorked > maxHours) {
-          maxHours = totalTimeWorked;
+        if (totalTimeWorkedInMinutes > maxHours) {
+          maxHours = totalTimeWorkedInMinutes;
           topWorkerName = employeeName;
         }
 
